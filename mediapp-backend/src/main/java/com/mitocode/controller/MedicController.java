@@ -11,6 +11,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -28,7 +29,9 @@ public class MedicController {
     private final IMedicService service;
     @Qualifier("medicMapper")
     private final ModelMapper mapper;
-    
+
+    @PreAuthorize("@authorizeLogic.hasAccess('findAll')")
+    //@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     @GetMapping
     public ResponseEntity<List<MedicDTO>> findAll(){
         List<MedicDTO> lst = service.findAll().stream().map(this::convertToDto).toList();
