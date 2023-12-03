@@ -9,6 +9,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ServerErrorsInterceptor } from './interceptor/server-errors-interceptor';
 import { environment } from 'src/environments/environment.development';
 import { JwtModule } from '@auth0/angular-jwt';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 export function tokenGetter() {
   return sessionStorage.getItem(environment.TOKEN_NAME);
@@ -16,7 +17,7 @@ export function tokenGetter() {
 
 @NgModule({
   declarations: [
-    AppComponent,
+    AppComponent
     //PatientComponent, PatientEditComponent, MedicComponent, se remueve por que ahora es standalone 
   ],
   imports: [
@@ -28,8 +29,8 @@ export function tokenGetter() {
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
-        allowedDomains: ["localhost:8080"],
-        disallowedRoutes: ["http://localhost:8080/login/forget"],
+        allowedDomains: ["146.190.214.184/mediapp-backend"],
+        disallowedRoutes: ["http://146.190.214.184/mediapp-backend/login/forget"],
       },
     }),
   ],
@@ -38,6 +39,9 @@ export function tokenGetter() {
       provide: HTTP_INTERCEPTORS,
       useClass: ServerErrorsInterceptor,
       multi: true
+    },
+    {
+      provide: LocationStrategy, useClass: HashLocationStrategy
     }
   ],
   bootstrap: [AppComponent]
