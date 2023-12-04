@@ -1,0 +1,21 @@
+.example-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .example-container > * {
+    width: 100%;
+  }
+  
+  .example-full-width{
+    position: relative;
+  }
+
+  .invalido {
+    position: absolute;
+    top: 0;
+    right: 0;
+    text-align: right;
+    font-size: 0.75em;
+    color: #DD0044;
+}
