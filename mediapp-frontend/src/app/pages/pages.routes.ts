@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { PatientComponent } from './patient/patient.component';
 import { PatientEditComponent } from './patient/patient-edit/patient-edit.component';
+import { PatientModalComponent } from './patient/patient-modal/patient-modal.component';
 import { MedicComponent } from './medic/medic.component';
 import { ExamComponent } from './exam/exam.component';
 import { ExamEditComponent } from './exam/exam-edit/exam-edit.component';
@@ -8,8 +9,11 @@ import { SpecialtyComponent } from './specialty/specialty.component';
 import { SpecialtyEditComponent } from './specialty/specialty-edit/specialty-edit.component';
 import { ConsultAutocompleteComponent } from './consult-autocomplete/consult-autocomplete.component';
 import { ConsultWizardComponent } from './consult-wizard/consult-wizard.component';
-import { SearchComponent } from './search/search.component';
-import { ReportComponent } from './report/report.component';
+import { SearchComponent } from './search/search.component'; 
+import { ReportComponent } from './report/report.component'; 
+import { VitalSignComponent } from './vital-sign/vital-sign.component';
+import { VitalSignEditComponent } from './vital-sign/vital-sign-edit/vital-sign-edit.component';
+import { ProfileComponent } from './profile/profile.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { CertGuard } from '../guard/cert.guard';
 import { Not403Component } from './not403/not403.component';
@@ -27,6 +31,10 @@ export const PagesRoutes: Routes = [
       {
         path: 'edit/:id',
         component: PatientEditComponent,
+      },
+      {
+        path: 'modal',
+        component: PatientModalComponent,
       },
     ], canActivate: [CertGuard],
   },  
@@ -58,11 +66,27 @@ export const PagesRoutes: Routes = [
       },
     ], canActivate: [CertGuard],
   },
+  { 
+    path: 'vital-sign', 
+    component: VitalSignComponent, 
+    children: [
+      {
+        path: 'new',
+        component: VitalSignEditComponent,
+      },
+      {
+        path: 'edit/:id',
+        component: VitalSignEditComponent,
+      },
+    ],
+     canActivate: [CertGuard] 
+  },
   { path: 'medic', component: MedicComponent, canActivate: [CertGuard] },
   { path: 'consult-autocomplete', component: ConsultAutocompleteComponent, canActivate: [CertGuard] },
   { path: 'consult-wizard', component: ConsultWizardComponent, canActivate: [CertGuard] },
   { path: 'search', component: SearchComponent, canActivate: [CertGuard] },
   { path: 'report', component: ReportComponent, canActivate: [CertGuard] },
+  { path: 'profile', component: ProfileComponent, canActivate: [CertGuard] },
   { path: 'not-403', component: Not403Component},
 ];
 

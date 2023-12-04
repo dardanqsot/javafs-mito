@@ -14,7 +14,7 @@
         </button>
 
         <mat-menu #menu="matMenu">
-            <button mat-menu-item>
+            <button mat-menu-item routerLink="/perfil">
                 <mat-icon>account_box</mat-icon>
                 <span>My account</span>
             </button>
@@ -37,7 +37,7 @@
                     <span>{{m.name}}</span>
                 </button>
             </div>
-            
+
             <!-- 
             <mat-divider></mat-divider>
             <button class="myButton" [routerLinkActive]="['active']" mat-menu-item (click)="sidenav.toggle()"

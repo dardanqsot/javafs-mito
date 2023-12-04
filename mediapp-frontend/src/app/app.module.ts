@@ -17,7 +17,7 @@ export function tokenGetter() {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
     //PatientComponent, PatientEditComponent, MedicComponent, se remueve por que ahora es standalone 
   ],
   imports: [

@@ -18,10 +18,10 @@ public class VitalSignDTO {
     private Integer idSign;
 
     @NotNull
-    private PatientDTO patientDTO;
+    private PatientDTO patient;
 
     @NotNull
-    private LocalDateTime consultDate;
+    private LocalDateTime vitalSignDate;
 
     @NotNull
     private String temperature;

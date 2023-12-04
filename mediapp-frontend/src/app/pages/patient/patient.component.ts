@@ -46,10 +46,6 @@ export class PatientComponent implements OnInit {
       this.totalElements = data.totalElements;
       this.createTable(data.content);
     });
-
-    /*this.patientService.findAll().subscribe((data) => {
-      this.createTable(data);
-    });*/
   }
 
   applyFilter(e: any){

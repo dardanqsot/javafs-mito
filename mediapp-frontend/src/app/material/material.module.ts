@@ -31,7 +31,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
   declarations: [],
-  imports: [CommonModule],
+  imports: [CommonModule, MatDialogModule],
   exports: [
     MatToolbarModule,
     MatButtonModule,
