@@ -5,8 +5,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
-import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { MaterialModule } from 'src/app/material/material.module';
+
 
 @Component({
   standalone: true,
@@ -19,26 +20,26 @@ export class VitalSignComponent implements OnInit {
 
   cantidad: number = 0;
   dataSource: MatTableDataSource<VitalSign>;
-  displayedColumns = ['idSignos', 'paciente', 'fecha', 'temperatura', 'pulso', 'ritmoRespiratorio', 'acciones'];
+  displayedColumns = ['idSign', 'patient', 'vitalSignDate', 'temperature', 'pulse', 'respiratoryRate', 'actions'];
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
-  constructor(private signosService : VitalSignService, private snack : MatSnackBar) { }
+  constructor(private vitalSignService : VitalSignService, private snack : MatSnackBar) { }
 
   ngOnInit() {
-    this.signosService.vitalSignChange.subscribe(data => {
+    this.vitalSignService.vitalSignChange.subscribe(data => {
       this.dataSource = new MatTableDataSource(data);
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
     });
 
-    this.signosService.messageChange.subscribe(data => {
+    this.vitalSignService.messageChange.subscribe(data => {
       this.snack.open(data, 'AVISO', {
         duration: 2000
       });
     });
 
-    this.signosService.listarPageable(0, 10).subscribe(data => {
+    this.vitalSignService.listarPageable(0, 10).subscribe(data => {
       this.cantidad = data.totalElements;
       this.dataSource = new MatTableDataSource(data.content);
       this.dataSource.sort = this.sort;
@@ -49,17 +50,17 @@ export class VitalSignComponent implements OnInit {
   }
 
   eliminar(idSignos: number) {
-    this.signosService.delete(idSignos).subscribe(() => {
-      this.signosService.findAll().subscribe(data => {
-        this.signosService.vitalSignChange.next(data);
-        this.signosService.messageChange.next('SE ELIMINO');
+    this.vitalSignService.delete(idSignos).subscribe(() => {
+      this.vitalSignService.findAll().subscribe(data => {
+        this.vitalSignService.vitalSignChange.next(data);
+        this.vitalSignService.messageChange.next('SE ELIMINO');
 
       });
     });
   }
 
   mostrarMas(e: any){
-    this.signosService.listarPageable(e.pageIndex, e.pageSize).subscribe(data => {
+    this.vitalSignService.listarPageable(e.pageIndex, e.pageSize).subscribe(data => {
       console.log(data);
       this.cantidad = data.totalElements;
       this.dataSource = new MatTableDataSource(data.content);

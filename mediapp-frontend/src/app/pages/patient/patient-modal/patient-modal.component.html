@@ -16,7 +16,7 @@
         </mat-form-field>
         <mat-form-field class="full-width">
             <span *ngIf="f['dni'].errors?.['required']" class="invalido">Introduzca el Nº teléfono</span>
-            <span *ngIf="f['dni']i.errors?.['minlength']" class="invalido">El campo debe tener 9 caracteres</span>
+            <span *ngIf="f['dni'].errors?.['minlength']" class="invalido">El campo debe tener 9 caracteres</span>
             <span *ngIf="f['dni'].errors?.['maxlength']" class="invalido">El campo debe tener 9 caracteres</span>
             <input matInput placeholder="Teléfono" required formControlName="telefono">
         </mat-form-field>

@@ -29,8 +29,8 @@ export function tokenGetter() {
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
-        allowedDomains: ["146.190.214.184/mediapp-backend"],
-        disallowedRoutes: ["http://146.190.214.184/mediapp-backend/login/forget"],
+        allowedDomains: ["localhost:8080"],
+        disallowedRoutes: ["http://localhost:8080/login/forget"],
       },
     }),
   ],

@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { Observable } from 'rxjs';
 import { VitalSign } from 'src/app/model/vitalSign';
 import { VitalSignService } from 'src/app/service/vitalSing.service';
 import { Patient } from 'src/app/model/patient';
 import { PatientService } from 'src/app/service/patient.service';
 import { ActivatedRoute, Params, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { switchMap } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { map } from 'rxjs/operators';
 import { PatientModalComponent } from 'src/app/pages/patient/patient-modal/patient-modal.component';
@@ -20,9 +20,8 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
   selector: 'app-vital-sign-edit',
   templateUrl: './vital-sign-edit.component.html',
   styleUrls: ['./vital-sign-edit.component.css'],
-  imports: [NgIf, NgFor, MaterialModule, FlexLayoutModule, ReactiveFormsModule, AsyncPipe] 
+  imports: [MaterialModule, ReactiveFormsModule, FlexLayoutModule, RouterLink, NgIf, NgFor, RouterOutlet, AsyncPipe] 
 })
-
 
 
 export class VitalSignEditComponent implements OnInit {
@@ -30,67 +29,77 @@ export class VitalSignEditComponent implements OnInit {
   form: FormGroup;
   id: number;
   edicion: boolean;
+  isEdit: boolean;
   options: string[] = [];
-  filteredOptions: Observable<string[]>;
+  //filteredOptions: Observable<string[]>;
+  patientControl: FormControl = new FormControl();
+  patientsFiltered$: Observable<Patient[]>;
+  patients$: Observable<Patient[]>
+  patients: Patient[];
 
   constructor(
     private route: ActivatedRoute,
     private router : Router,
     private vitalSignService : VitalSignService,
     private patientService : PatientService,
-    private datepipe: DatePipe,
     public dialog: MatDialog
   ) { }
 
-  ngOnInit() {
+
+  ngOnInit(): void {
     this.form = new FormGroup({
-      'id' : new FormControl(0),
-      'id_paciente' : new FormControl('', [Validators.required]),
-      'nombre' : new FormControl('', [Validators.required]),
-      'fecha' : new FormControl('', Validators.required),
-      'temperatura': new FormControl(''),
-      'pulso': new FormControl(''),
-      'ritmoRespiratorio': new FormControl('')
+      idSign : new FormControl(0),
+      patient: new FormControl([Validators.required]),
+      vitalSignDate : new FormControl(new Date(), [Validators.required]),
+      temperature: new FormControl(''),
+      pulse: new FormControl(''),
+      respiratoryRate: new FormControl(''),
+
     });
 
-    this.route.params.subscribe((params: Params) => {
-      this.id = params['id'];
-      this.edicion = params['id'] != null;
+    this.patientsFiltered$ = this.patientControl.valueChanges.pipe(map(val => this.filterPatients(val)));
+
+    this.route.params.subscribe(data => {
+      this.id = data['id'];
+      this.isEdit = data['id'] != null;
       this.initForm();
-      this.filteredOptions = this.form.controls['nombre'].valueChanges.pipe(
-        //startWith(""), 
-        map(val => this.filter(val))
+
+    });    
+  }
+
+  filterPatients(val: any){
+    if(val?.idPatient > 0){
+      return this.patients.filter(pa => 
+        pa.firstName.toLowerCase().includes(val.firstName.toLowerCase()) || pa.lastName.toLowerCase().includes(val.lastName.toLowerCase()) || pa.dni.includes(val.dni)
       );
-      this.form.get('nombre').valueChanges.subscribe((nomb:string) => {
-        const idx = nomb.indexOf(':');
-        this.form.patchValue({
-          'id_paciente': idx > 0 ? parseInt(nomb.substring(0, idx)) : ''
-        });
-      })
-    });
+    }else{
+      return this.patients.filter(pa => 
+        pa.firstName.toLowerCase().includes(val?.toLowerCase()) || pa.lastName.toLowerCase().includes(val?.toLowerCase()) || pa.dni.includes(val)
+      );
+    }
   }
 
   initForm(){
-    if(this.edicion){
+    if(this.isEdit){
       this.vitalSignService.findById(this.id).subscribe(data => {
         this.form = new FormGroup({
-          'id': new FormControl(data.idSign),
-          'id_paciente' : new FormControl(data.patient.idPatient, [Validators.required]),
-          'nombre' : new FormControl(data.patient.idPatient + ': ' + data.patient.firstName + ' ' + data.patient.lastName, [Validators.required, Validators.minLength(3)]),
-          'fecha': new FormControl(this.datepipe.transform(new Date(data.vitalSignDate), 'yyyy-MM-dd'), Validators.required),
-          'temperatura': new FormControl(data.temperature),
-          'pulso': new FormControl(data.pulse),
-          'ritmoRespiratorio': new FormControl(data.respiratoryRate)
+          'idSign': new FormControl(data.idSign),
+          'patient' : new FormControl(data.patient, [Validators.required]),
+         // 'name' : new FormControl(data.patient.idPatient + ': ' + data.patient.firstName+ ' ' + data.patient.lastName, [Validators.required, Validators.minLength(3)]),
+          'vitalSignDate': new FormControl(new Date(data.vitalSignDate), Validators.required),
+          'temperature': new FormControl(data.temperature),
+          'pulse': new FormControl(data.pulse),
+          'respiratoryRate': new FormControl(data.respiratoryRate)
         });
       });
     }
-    this.actualizarAutocomplete();
+    this.updateAutocomplete();
   }
 
-  actualizarAutocomplete() {
+  updateAutocomplete() {
     this.patientService.findAll().subscribe(data => {
-      this.options = data.map(paciente => {
-        return (paciente.idPatient + ': ' + paciente.firstName + ' ' + paciente.lastName).trim();
+      this.options = data.map(patient => {
+        return (patient.idPatient + ': ' + patient.firstName + ' ' + patient.lastName).trim();
       });
     });
   }
@@ -103,49 +112,51 @@ export class VitalSignEditComponent implements OnInit {
 
   get f() { return this.form.controls; }
 
-  nuevoPaciente() {
+  newVitalSign() {
     const dialogRef = this.dialog.open(PatientModalComponent, {
       width: '360px',
       data: {}
     });
     dialogRef.afterClosed().subscribe((patient: Patient) => {
       if (patient) {
-        this.actualizarAutocomplete();
+        this.updateAutocomplete();
         this.form.patchValue({
-          'id_paciente': patient.idPatient,
-          'nombre': patient.idPatient + ': ' + patient.firstName + ' ' + patient.lastName
+          patient: patient,
+          //'name': patient.idPatient + ': ' + patient.firstName + ' ' + patient.lastName
         });
       }
     });
   }
 
-  operar(){
-    if(this.form.invalid){
-      return;
-    }
+  operate() {
+    if (this.form.invalid) { return; }
 
     let vitalSign = new VitalSign();
-    vitalSign.idSign = this.form.value['id'];
-    vitalSign.patient = new Patient();
-    vitalSign.patient.idPatient = this.form.value['id_paciente'];
-    vitalSign.vitalSignDate = moment(this.form.value['fecha']).format('YYYY-MM-DDTHH:mm:ss');
-    vitalSign.temperature = this.form.value['temperatura'];
-    vitalSign.pulse = this.form.value['pulso'];
-    vitalSign.respiratoryRate = this.form.value['ritmoRespiratorio'];
+    vitalSign.idSign = this.form.value['idSign'];
+    vitalSign.patient = this.form.value['patient'];
+    vitalSign.vitalSignDate = moment(this.form.value['vitalSignDate']).format('YYYY-MM-DDTHH:mm:ss');
+    vitalSign.temperature = this.form.value['temperature'];
+    vitalSign.pulse = this.form.value['pulse'];
+    vitalSign.respiratoryRate = this.form.value['respiratoryRate'];
+    
 
-    if(this.edicion){
-      this.vitalSignService.update(vitalSign.idSign, vitalSign).subscribe( () => { this.notificarCambio('SE MODIFICO'); });
-    }else{
-      this.vitalSignService.save(vitalSign).subscribe( () => { this.notificarCambio('SE REGISTRO'); });
+    if (this.isEdit) {
+      this.vitalSignService.update(vitalSign.idSign, vitalSign).subscribe(() => {
+        this.vitalSignService.findAll().subscribe(data => {
+          this.vitalSignService.setVitalSignChange(data);
+          this.vitalSignService.setMessageChange('UPDATED!')
+        });
+      });
+    } else {      
+      this.vitalSignService.save(vitalSign).pipe(switchMap(()=>{        
+        return this.vitalSignService.findAll();
+      }))
+      .subscribe(data => {
+        this.vitalSignService.setVitalSignChange(data);
+        this.vitalSignService.setMessageChange("CREATED!")
+      });
     }
-    this.router.navigate(['vital-sign']);
-  }
-
-  notificarCambio(msg: string) {
-    this.vitalSignService.findAll().subscribe(data => {
-      this.vitalSignService.vitalSignChange.next(data);
-      this.vitalSignService.messageChange.next(msg);
-    });
+    this.router.navigate(['/pages/vital-sign']);
   }
 
 }

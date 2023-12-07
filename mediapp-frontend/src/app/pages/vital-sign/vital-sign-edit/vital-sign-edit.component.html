@@ -1,51 +1,49 @@
 <mat-card>Ingrese los datos de los signos vitales</mat-card>
 
-<form class="example-container" [formGroup]="form" #frmSignos="ngForm" (ngSubmit)="operar()" style="padding: 0em 1em;">
+<form class="example-container" [formGroup]="form" #frmSignos="ngForm" (submit)="operate()" style="padding: 0em 1em;">
 
     <div [hidden]="true">
         <mat-form-field class="example-full-width">
-            <input matInput placeholder="ID" required formControlName="id">
+            <input matInput placeholder="ID" required formControlName="idSign">
         </mat-form-field>
     </div>
-
+<!--
     <div [hidden]="true">
         <mat-form-field class="example-full-width">
-            <input matInput placeholder="ID de Paciente" required formControlName="id_paciente">
+            <input matInput placeholder="ID de Paciente" required formControlName="idPatient">
         </mat-form-field>
     </div>
-
+-->
     <div style="display: flex; flex-flow: row; align-items: center;">
         <mat-form-field class="example-full-width" style="flex-grow: 1;">
-            <div *ngIf="f.['id_paciente'].errors?.['required']" class="invalido">Paciente es requerido</div>
-            <div *ngIf="f.['nombre'].errors?.['minlength']" class="invalido">El campo debe ser mayor a 3 caracteres</div>
-            <input matInput placeholder="Paciente" minlength="3" required formControlName="nombre" [matAutocomplete]="auto">
+            <input matInput placeholder="Paciente" required formControlName="patient" [matAutocomplete]="auto" [formControl]="patientControl">
             <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-                <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-                    {{ option }}
+                <mat-option *ngFor="let m of patientsFiltered$ | async" [value]="m">
+                    {{m.firstName}} {{m.lastName}}
                 </mat-option>
             </mat-autocomplete>
         </mat-form-field>
 
-        <button mat-raised-button color="primary" (click)="nuevoPaciente()" [disabled]="!(f.['id_paciente'].errors?.['required'])" style="flex-grow: 0; margin-left: 1em;">
+        <button mat-raised-button color="primary" (click)="newVitalSign()">
             <mat-icon>edit</mat-icon>&nbsp;
             <span>Nuevo Paciente</span>
         </button>
     </div>
 
     <mat-form-field class="example-full-width">
-        <input matInput placeholder="Fecha" required formControlName="fecha" type="date">
+        <input matInput placeholder="Fecha" required formControlName="vitalSignDate" type="date">
     </mat-form-field>
 
     <mat-form-field class="example-full-width">
-        <input matInput placeholder="Temperatura (Cº)" required formControlName="temperatura" type="number">
+        <input matInput placeholder="Temperatura (Cº)" required formControlName="temperature" type="number">
     </mat-form-field>
 
     <mat-form-field class="example-full-width">
-        <input matInput placeholder="Pulsaciones p/min" required formControlName="pulso" type="number">
+        <input matInput placeholder="Pulsaciones p/min" required formControlName="pulse" type="number">
     </mat-form-field>
 
     <mat-form-field class="example-full-width">
-        <input matInput placeholder="Respiraciones p/min" required formControlName="ritmoRespiratorio" type="number">
+        <input matInput placeholder="Respiraciones p/min" required formControlName="respiratoryRate" type="number">
     </mat-form-field>
 
     <button mat-raised-button color="primary" type="submit" [disabled]="frmSignos.invalid">
