@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class VitalSignDTO {
 
     @EqualsAndHashCode.Include
-    private Integer idSign;
+    private Integer idVitalSign;
 
     @NotNull
     private PatientDTO patient;

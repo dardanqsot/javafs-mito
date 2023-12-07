@@ -15,7 +15,7 @@ import { MaterialModule } from 'src/app/material/material.module';
 export class ProfileComponent implements OnInit {
 
   usuario: string;
-  rol: string;
+  roles: string;
 
   constructor(
     private loginService: LoginService
@@ -26,9 +26,10 @@ export class ProfileComponent implements OnInit {
     if (this.loginService.isLogged()) {
       let token = sessionStorage.getItem(environment.TOKEN_NAME);
       const decodedToken = helper.decodeToken(token);
-      this.usuario = decodedToken.user_name;
-      const roles: string[] = decodedToken.authorities;
-      this.rol = roles.join(', ');
+
+      this.usuario = decodedToken.sub;
+      this.roles = decodedToken.role;
+     
     } else {
       this.loginService.logout();
     }

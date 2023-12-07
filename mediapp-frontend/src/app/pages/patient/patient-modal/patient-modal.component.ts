@@ -25,11 +25,13 @@ export class PatientModalComponent implements OnInit {
   ngOnInit() {
     this.form = new FormGroup({
       'id' : new FormControl(0),
-      'nombres' : new FormControl('', [Validators.required, Validators.minLength(3)]),
-      'apellidos' : new FormControl('', [Validators.required, Validators.minLength(3)]),
+      'firstName' : new FormControl('', [Validators.required, Validators.minLength(3)]),
+      'lastName' : new FormControl('', [Validators.required, Validators.minLength(3)]),
       'email': new FormControl(''),
-      'telefono': new FormControl('', [Validators.required, Validators.minLength(9), Validators.maxLength(9)]),
-      'dni': new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)])
+      'phone': new FormControl('', [Validators.required, Validators.minLength(9), Validators.maxLength(9)]),
+      'dni': new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]),
+      'address': new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(8)])
+      
     });
   }
 
@@ -38,11 +40,12 @@ export class PatientModalComponent implements OnInit {
   submit() {
     if (this.form.invalid) return;
     const patient: Patient = new Patient();
-    patient.firstName = this.form.value['nombres'];
-    patient.lastName = this.form.value['apellidos'];
+    patient.firstName = this.form.value['firstName'];
+    patient.lastName = this.form.value['lastName'];
     patient.email = this.form.value['email'];
-    patient.phone = this.form.value['telefono'];
+    patient.phone = this.form.value['phone'];
     patient.dni = this.form.value['dni'];
+    patient.address = this.form.value['address'];
     this.patientService.save(patient).subscribe(data => {
       this.dialogRef.close(data);
     });

@@ -34,8 +34,9 @@ export class VitalSignEditComponent implements OnInit {
   //filteredOptions: Observable<string[]>;
   patientControl: FormControl = new FormControl();
   patientsFiltered$: Observable<Patient[]>;
-  patients$: Observable<Patient[]>
+  patients$: Observable<Patient[]>;
   patients: Patient[];
+  patienSelected: Patient;
 
   constructor(
     private route: ActivatedRoute,
@@ -48,8 +49,8 @@ export class VitalSignEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = new FormGroup({
-      idSign : new FormControl(0),
-      patient: new FormControl([Validators.required]),
+      idVitalSign : new FormControl(0),
+      patient: this.patientControl,
       vitalSignDate : new FormControl(new Date(), [Validators.required]),
       temperature: new FormControl(''),
       pulse: new FormControl(''),
@@ -64,28 +65,40 @@ export class VitalSignEditComponent implements OnInit {
       this.isEdit = data['id'] != null;
       this.initForm();
 
-    });    
+    });  
+    this.loadInitialData();  
   }
 
-  filterPatients(val: any){
+  filterPatients(val: any){   
     if(val?.idPatient > 0){
       return this.patients.filter(pa => 
         pa.firstName.toLowerCase().includes(val.firstName.toLowerCase()) || pa.lastName.toLowerCase().includes(val.lastName.toLowerCase()) || pa.dni.includes(val.dni)
       );
     }else{
       return this.patients.filter(pa => 
-        pa.firstName.toLowerCase().includes(val?.toLowerCase()) || pa.lastName.toLowerCase().includes(val?.toLowerCase()) || pa.dni.includes(val)
+        pa.firstName.toLowerCase().includes(val.toLowerCase()) || pa.lastName.toLowerCase().includes(val.toLowerCase()) || pa.dni.includes(val)
       );
     }
+  }
+
+  
+  loadInitialData() {
+    this.patients$ = this.patientService.findAll();//.subscribe(data => this.patients = data);
+    this.patientService.findAll().subscribe(data => this.patients = data);
+  }
+
+  
+  showPatient(val: any){
+    this.patienSelected = val;
+    return val ? `${val.firstName} ${val.lastName}` : val;
   }
 
   initForm(){
     if(this.isEdit){
       this.vitalSignService.findById(this.id).subscribe(data => {
         this.form = new FormGroup({
-          'idSign': new FormControl(data.idSign),
+          'idVitalSign': new FormControl(data.idVitalSign),
           'patient' : new FormControl(data.patient, [Validators.required]),
-         // 'name' : new FormControl(data.patient.idPatient + ': ' + data.patient.firstName+ ' ' + data.patient.lastName, [Validators.required, Validators.minLength(3)]),
           'vitalSignDate': new FormControl(new Date(data.vitalSignDate), Validators.required),
           'temperature': new FormControl(data.temperature),
           'pulse': new FormControl(data.pulse),
@@ -132,7 +145,7 @@ export class VitalSignEditComponent implements OnInit {
     if (this.form.invalid) { return; }
 
     let vitalSign = new VitalSign();
-    vitalSign.idSign = this.form.value['idSign'];
+    vitalSign.idVitalSign = this.form.value['idVitalSign'];
     vitalSign.patient = this.form.value['patient'];
     vitalSign.vitalSignDate = moment(this.form.value['vitalSignDate']).format('YYYY-MM-DDTHH:mm:ss');
     vitalSign.temperature = this.form.value['temperature'];
@@ -141,13 +154,15 @@ export class VitalSignEditComponent implements OnInit {
     
 
     if (this.isEdit) {
-      this.vitalSignService.update(vitalSign.idSign, vitalSign).subscribe(() => {
+      this.vitalSignService.update(vitalSign.idVitalSign, vitalSign).subscribe(() => {
         this.vitalSignService.findAll().subscribe(data => {
           this.vitalSignService.setVitalSignChange(data);
           this.vitalSignService.setMessageChange('UPDATED!')
         });
       });
-    } else {      
+    } else {     
+      const jsonString = JSON.stringify(vitalSign);
+      console.log("vitalSign: " +  jsonString); 
       this.vitalSignService.save(vitalSign).pipe(switchMap(()=>{        
         return this.vitalSignService.findAll();
       }))

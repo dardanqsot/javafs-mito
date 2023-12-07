@@ -20,7 +20,7 @@ export class VitalSignComponent implements OnInit {
 
   cantidad: number = 0;
   dataSource: MatTableDataSource<VitalSign>;
-  displayedColumns = ['idSign', 'patient', 'vitalSignDate', 'temperature', 'pulse', 'respiratoryRate', 'actions'];
+  displayedColumns = ['idVitalSign', 'patient', 'vitalSignDate', 'temperature', 'pulse', 'respiratoryRate', 'actions'];
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
@@ -49,8 +49,8 @@ export class VitalSignComponent implements OnInit {
     this.dataSource.filter = valor.trim().toLowerCase();
   }
 
-  eliminar(idSignos: number) {
-    this.vitalSignService.delete(idSignos).subscribe(() => {
+  eliminar(idVitalSign: number) {
+    this.vitalSignService.delete(idVitalSign).subscribe(() => {
       this.vitalSignService.findAll().subscribe(data => {
         this.vitalSignService.vitalSignChange.next(data);
         this.vitalSignService.messageChange.next('SE ELIMINO');

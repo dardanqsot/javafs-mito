@@ -18,7 +18,7 @@ public class VitalSign {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idSign;
+    private Integer idVitalSign;
 
     @ManyToOne
     @JoinColumn(name = "id_paciente", nullable = false, foreignKey = @ForeignKey(name = "FK_VITAL_SIGN"))

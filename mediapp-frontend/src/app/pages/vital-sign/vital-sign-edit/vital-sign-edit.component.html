@@ -4,7 +4,7 @@
 
     <div [hidden]="true">
         <mat-form-field class="example-full-width">
-            <input matInput placeholder="ID" required formControlName="idSign">
+            <input matInput placeholder="ID" required formControlName="idVitalSign">
         </mat-form-field>
     </div>
 <!--
@@ -17,15 +17,15 @@
     <div style="display: flex; flex-flow: row; align-items: center;">
         <mat-form-field class="example-full-width" style="flex-grow: 1;">
             <input matInput placeholder="Paciente" required formControlName="patient" [matAutocomplete]="auto" [formControl]="patientControl">
-            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-                <mat-option *ngFor="let m of patientsFiltered$ | async" [value]="m">
-                    {{m.firstName}} {{m.lastName}}
+            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" [displayWith]="showPatient">
+                <mat-option *ngFor="let p of patientsFiltered$ | async" [value]="p">
+                    {{p.firstName}} {{p.lastName}}
                 </mat-option>
             </mat-autocomplete>
         </mat-form-field>
 
         <button mat-raised-button color="primary" (click)="newVitalSign()">
-            <mat-icon>edit</mat-icon>&nbsp;
+            <mat-icon>add</mat-icon>&nbsp;
             <span>Nuevo Paciente</span>
         </button>
     </div>

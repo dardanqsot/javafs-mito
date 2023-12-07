@@ -1,9 +1,9 @@
 <router-outlet></router-outlet>
 
   <mat-table [dataSource]="dataSource" matSort>
-    <ng-container matColumnDef="idSign">
+    <ng-container matColumnDef="idVitalSign">
       <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
-      <mat-cell *matCellDef="let row"> {{row.idSign}} </mat-cell>
+      <mat-cell *matCellDef="let row"> {{row.idVitalSign}} </mat-cell>
     </ng-container>
   
     <ng-container matColumnDef="patient">
@@ -34,9 +34,9 @@
   
     <ng-container matColumnDef="actions">
       <mat-header-cell *matHeaderCellDef>Acciones</mat-header-cell>
-      <mat-cell *matCellDef="let row">
-        <button mat-button color="primary" [routerLink]="['edicion', row.idSignos]"><mat-icon>ballot</mat-icon></button>
-        <button mat-button color="accent" (click)="eliminar(row.idSignos)"><mat-icon>delete</mat-icon></button>
+      <mat-cell *matCellDef="let row">    
+        <button mat-button color="primary" [routerLink]="['/pages/vital-sign/edit', row.idVitalSign]"><mat-icon>ballot</mat-icon></button>
+        <button mat-button color="accent" (click)="eliminar(row.idVitalSign)"><mat-icon>delete</mat-icon></button>
       </mat-cell>
     </ng-container>
   
